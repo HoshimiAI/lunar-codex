@@ -87,6 +87,21 @@ install:
 test *args:
     RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
 
+# Exercise Codex's Linux bubblewrap sandbox in a disposable Linux test container.
+[unix]
+sandbox-smoke:
+    bash ../scripts/sandbox-cargo-test.sh -p codex-linux-sandbox --test all test_writable_root
+
+# Run Codex CLI tests in a disposable Linux test container.
+[unix]
+sandbox-codex *args:
+    bash ../scripts/sandbox-cargo-test.sh -p codex-cli {args}
+
+# Run Codex interactively in the isolated Linux container.
+[unix]
+sandbox-codex-run *args:
+    bash ../scripts/sandbox-codex-run.sh {args}
+
 [windows]
 test *args:
     $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; cargo nextest run --no-fail-fast @($args | Select-Object -Skip 1)
